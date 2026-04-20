@@ -11,8 +11,8 @@ const DeleteModal = ({ invoiceId, onClose, onConfirm }: DeleteModalProps) => {
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-6">
       <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
       <div className="relative w-full max-w-[480px] rounded-lg bg-container p-8 md:p-12 transition-colors">
-        <h2 className="mb-3 text-2xl font-bold tracking-tight text-text-main">Confirm Deletion</h2>
-        <p className="mb-4 text-[12px] leading-6 text-text-secondary font-medium">
+        <h2 className="mb-3 text-2xl font-bold tracking-tight text-text-main transition-colors">Confirm Deletion</h2>
+        <p className="mb-4 text-[12px] leading-6 text-text-secondary font-medium transition-colors">
           Are you sure you want to delete invoice #{invoiceId}? This action cannot be undone.
         </p>
         <div className="flex justify-end gap-2">
