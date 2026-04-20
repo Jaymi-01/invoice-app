@@ -18,13 +18,13 @@ const DeleteModal = ({ invoiceId, onClose, onConfirm }: DeleteModalProps) => {
         <div className="flex justify-end gap-2">
           <button 
             onClick={onClose}
-            className="rounded-full bg-discard-button dark:bg-[#252945] dark:text-text-secondary px-6 py-4 text-[12px] font-bold text-text-accent hover:bg-input-border dark:hover:bg-white transition-colors cursor-pointer"
+            className="rounded-full bg-btn-secondary-bg px-6 py-4 text-[12px] font-bold text-btn-secondary-text lg:hover:bg-btn-secondary-hover transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button 
             onClick={onConfirm}
-            className="rounded-full bg-[#EC5757] px-6 py-4 text-[12px] font-bold text-white hover:bg-[#FF9797] transition-colors cursor-pointer"
+            className="rounded-full bg-[#EC5757] px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-[#FF9797] transition-colors cursor-pointer"
           >
             Delete
           </button>
