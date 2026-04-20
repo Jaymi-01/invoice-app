@@ -2,7 +2,11 @@ import React from 'react'
 import { Plus, CaretDown } from '@phosphor-icons/react'
 import emptyImg from '../assets/email-campaign.png'
 
-const Invoices = () => {
+interface InvoicesProps {
+  onOpenForm: () => void
+}
+
+const Invoices = ({ onOpenForm }: InvoicesProps) => {
   return (
     <main className="px-6 py-8 lg:max-w-[730px] lg:mx-auto lg:py-16">
       <header className="flex items-center justify-between mb-16 lg:mb-16">
@@ -17,7 +21,10 @@ const Invoices = () => {
             <CaretDown weight="bold" size={12} className="text-button" />
           </button>
 
-          <button className="flex items-center bg-button rounded-full p-1.5 lg:p-2 focus:outline-none cursor-pointer">
+          <button 
+            onClick={onOpenForm}
+            className="flex items-center bg-button rounded-full p-1.5 lg:p-2 focus:outline-none cursor-pointer"
+          >
             <div className="bg-white rounded-full p-1 mr-2 lg:mr-4">
               <Plus weight="bold" size={16} className="text-button" />
             </div>
