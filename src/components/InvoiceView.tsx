@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { CaretLeft } from '@phosphor-icons/react'
 import type { Invoice } from '../types'
 import DeleteModal from './DeleteModal'

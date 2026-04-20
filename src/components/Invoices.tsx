@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Plus, CaretDown, CaretRight } from '@phosphor-icons/react'
 import emptyImg from '../assets/email-campaign.png'
 import type { Invoice } from '../types'

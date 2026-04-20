@@ -1,4 +1,3 @@
-import React from 'react'
 import logo from '../assets/logo.svg'
 import { Sun, Moon } from '@phosphor-icons/react'
 
