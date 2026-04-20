@@ -24,7 +24,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
   }
 
   return (
-    <div className="flex h-screen flex-col lg:h-auto lg:block">
+    <div className="flex h-[calc(100vh-72px)] flex-col lg:h-auto lg:block">
       {isDeleteModalOpen && (
         <DeleteModal 
           invoiceId={invoice.id} 
@@ -37,10 +37,10 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
       )}
 
       {/* Scrollable Content */}
-      <main className="flex-1 overflow-y-auto px-6 py-8 md:px-12 md:py-14 lg:max-w-[730px] lg:mx-auto lg:py-16">
+      <main className="flex-1 overflow-y-auto px-6 py-8 md:px-12 md:py-14 lg:px-0 lg:max-w-[730px] lg:mx-auto lg:py-16">
         <button 
           onClick={onBack}
-          className="mb-8 flex items-center text-[12px] font-bold tracking-tight text-text-main group transition-colors"
+          className="mb-8 flex items-center text-[12px] font-bold tracking-tight text-text-main group transition-colors cursor-pointer"
         >
           <CaretLeft weight="bold" size={12} className="mr-4 text-button lg:group-hover:text-text-accent" />
           Go back
@@ -58,8 +58,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
               {invoice.status}
             </div>
           </div>
-          
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex gap-2">
             <button onClick={onEdit} className="rounded-full bg-btn-secondary-bg px-6 py-4 text-[12px] font-bold text-btn-secondary-text lg:hover:bg-btn-secondary-hover transition-colors cursor-pointer">Edit</button>
             <button onClick={() => setIsDeleteModalOpen(true)} className="rounded-full bg-[#EC5757] px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-[#FF9797] transition-colors cursor-pointer">Delete</button>
             {invoice.status === 'pending' && (
@@ -69,7 +68,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
         </div>
 
         {/* Details Card */}
-        <div className="bg-container rounded-lg p-6 md:p-8 lg:p-12 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] transition-colors">
+        <div className="bg-container rounded-lg p-6 md:p-8 lg:p-12 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] md:mb-0 transition-colors">
           <div className="flex flex-col md:flex-row md:justify-between mb-8 md:mb-5">
             <div className="mb-8 md:mb-0">
               <h1 className="font-bold text-text-main text-base mb-1 transition-colors">
