@@ -6,9 +6,10 @@ import type { Invoice } from '../types'
 interface InvoicesProps {
   invoices: Invoice[]
   onOpenForm: () => void
+  onSelectInvoice: (invoice: Invoice) => void
 }
 
-const Invoices = ({ invoices, onOpenForm }: InvoicesProps) => {
+const Invoices = ({ invoices, onOpenForm, onSelectInvoice }: InvoicesProps) => {
   const getStatusStyles = (status: string) => {
     switch (status) {
       case 'paid':
@@ -61,7 +62,11 @@ const Invoices = ({ invoices, onOpenForm }: InvoicesProps) => {
       ) : (
         <section className="space-y-4">
           {invoices.map((invoice) => (
-            <div key={invoice.id} className="bg-white rounded-lg p-6 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] border border-transparent hover:border-button transition-all cursor-pointer md:flex md:items-center md:justify-between md:px-8">
+            <div 
+              key={invoice.id} 
+              onClick={() => onSelectInvoice(invoice)}
+              className="bg-white rounded-lg p-6 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] border border-transparent hover:border-button transition-all cursor-pointer md:flex md:items-center md:justify-between md:px-8"
+            >
               <div className="flex justify-between items-center mb-6 md:mb-0 md:gap-10">
                 <span className="font-bold text-[#0C0E1E] text-[12px] md:w-20">
                   <span className="text-[#7E88C3]">#</span>{invoice.id}
@@ -97,4 +102,3 @@ const Invoices = ({ invoices, onOpenForm }: InvoicesProps) => {
 }
 
 export default Invoices
-
