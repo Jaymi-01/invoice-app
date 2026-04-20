@@ -39,10 +39,10 @@ const Invoices = ({ invoices, onOpenForm, onSelectInvoice }: InvoicesProps) => {
   }
 
   return (
-    <main className="px-6 py-8 md:px-12 md:py-14 lg:max-w-[730px] lg:mx-auto lg:py-16 transition-all">
+    <main className="px-6 py-8 md:px-12 md:py-14 lg:px-0 lg:max-w-[730px] lg:mx-auto lg:py-16 transition-all">
       <header className="flex items-center justify-between mb-8 md:mb-14 lg:mb-16">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-text-main md:text-3xl transition-colors">Invoices</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-text-main lg:text-3xl transition-colors">Invoices</h1>
           <p className="text-text-secondary text-[13px] mt-1 transition-colors">
             {filteredInvoices.length === 0 
               ? 'No invoices' 
@@ -85,7 +85,7 @@ const Invoices = ({ invoices, onOpenForm, onSelectInvoice }: InvoicesProps) => {
                         )}
                       </div>
                     </div>
-                    <span className="ml-3 text-[12px] font-bold capitalize text-text-main lg:group-hover:text-button transition-colors">{status}</span>
+                    <span className="ml-3 text-[12px] font-bold capitalize text-text-main lg:group-hover:text-button transition-colors cursor-pointer">{status}</span>
                   </label>
                 ))}
               </div>
@@ -111,8 +111,8 @@ const Invoices = ({ invoices, onOpenForm, onSelectInvoice }: InvoicesProps) => {
             alt="No invoices Illustration" 
             className="w-[193px] mb-10 md:w-[242px] lg:mb-16"
           />
-          <h2 className="text-xl font-bold text-text-main mb-6 tracking-tight lg:text-2xl">There is nothing here</h2>
-          <p className="text-text-secondary text-center text-[13px] max-w-[180px] md:max-w-none">
+          <h2 className="text-xl font-bold text-text-main mb-6 tracking-tight lg:text-2xl transition-colors">There is nothing here</h2>
+          <p className="text-text-secondary text-center text-[13px] max-w-[180px] md:max-w-none transition-colors">
             Create an invoice by clicking the <span className="font-bold">New Invoice</span> button and get started
           </p>
         </section>
