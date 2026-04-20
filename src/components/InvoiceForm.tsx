@@ -238,7 +238,7 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
   return (
     <div className="fixed top-[72px] bottom-0 left-0 right-0 z-40 lg:top-0 lg:left-[103px]">
       <div className="absolute inset-0 bg-black/50" onClick={handleClose}></div>
-      <div className="relative flex h-full w-full max-w-[616px] flex-col bg-background md:rounded-r-[20px] transition-colors duration-300">
+      <div className="relative flex h-full w-full max-w-[616px] flex-col bg-background dark:bg-dark-bg md:rounded-r-[20px] transition-colors duration-300">
         <div className="flex-1 overflow-y-auto px-6 py-8 md:px-14 md:py-16">
           <button onClick={handleClose} className="mb-6 flex items-center text-[12px] font-bold tracking-tight text-text-main md:hidden transition-colors">
             <CaretLeft weight="bold" size={12} className="mr-2 text-button" /> Go back
@@ -325,7 +325,7 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
               <h2 className="mb-4 text-[18px] font-bold tracking-tight text-[#777F98] transition-colors">Item List</h2>
               <div className="space-y-12 md:space-y-4">
                 {items.map(item => (
-                  <div key={item.id} className="grid grid-cols-[64px_100px_1fr_auto] gap-x-4 gap-y-6 items-end md:grid-cols-[2.5fr_1fr_1.5fr_1fr_auto]">
+                  <div key={item.id} className="grid grid-cols-[64px_100px_1fr_auto] gap-x-4 gap-y-6 items-end md:grid-cols-[3fr_1fr_1.5fr_1fr_auto]">
                     <div className="col-span-4 order-2 md:col-span-1 md:order-1">
                       <label className={`mb-2 block text-[12px] font-medium transition-colors ${errors[`item-${item.id}`] && !item.name ? 'text-[#EC5757]' : 'text-text-secondary'}`}>Item Name</label>
                       <input type="text" value={item.name} onChange={(e) => handleItemChange(item.id, 'name', e.target.value)} className={`w-full rounded-[4px] border bg-container px-5 py-4 text-[12px] font-bold text-text-main focus:outline-none transition-colors ${errors[`item-${item.id}`] && !item.name ? 'border-[#EC5757]' : 'border-input-border focus:border-button'}`} />
