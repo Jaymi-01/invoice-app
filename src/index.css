@@ -4,24 +4,47 @@
 :root {
   --background: #f8f8fb;
   --container: #ffffff;
+  
   --text-main: #0c0e1e;
   --text-secondary: #888eb0;
   --text-accent: #7e88c3;
-  --input-bg: #ffffff;
+  
   --input-border: #dfe3fa;
+  
+  --btn-secondary-bg: #f9fafe;
+  --btn-secondary-text: #7e88c3;
+  --btn-secondary-hover: #dfe3fa;
+
+  --btn-draft-bg: #373b53;
+  --btn-draft-text: #888eb0;
+  --btn-draft-hover: #0c0e1e;
+  
+  /* Constant colors */
   --header-bg: #373b53;
   --button: #7c5dfa;
   --button-hover: #9277ff;
+  --pending: #ff8f00;
+  --paid: #33d69f;
+  --grand-total: #0c0e16;
 }
 
 .dark {
   --background: #141625;
   --container: #1e2139;
+  
   --text-main: #ffffff;
   --text-secondary: #dfe3fa;
   --text-accent: #888eb0;
-  --input-bg: #1e2139;
+  
   --input-border: #252945;
+  
+  --btn-secondary-bg: #252945;
+  --btn-secondary-text: #dfe3fa;
+  --btn-secondary-hover: #ffffff;
+
+  --btn-draft-bg: #373b53;
+  --btn-draft-text: #dfe3fa;
+  --btn-draft-hover: #1e2139;
 }
 
 @theme {
@@ -32,21 +55,27 @@
   --color-text-main: var(--text-main);
   --color-text-secondary: var(--text-secondary);
   --color-text-accent: var(--text-accent);
-  --color-input-bg: var(--input-bg);
   --color-input-border: var(--input-border);
   
   --color-bg-header: var(--header-bg);
   --color-button: var(--button);
   --color-button-hover: var(--button-hover);
-  --color-draft-button: #373b53;
-  --color-discard-button: #f9fafe;
   
-  --color-pending: #ff8f00;
-  --color-paid: #33d69f;
+  --color-btn-secondary-bg: var(--btn-secondary-bg);
+  --color-btn-secondary-text: var(--btn-secondary-text);
+  --color-btn-secondary-hover: var(--btn-secondary-hover);
+  
+  --color-btn-draft-bg: var(--btn-draft-bg);
+  --color-btn-draft-text: var(--btn-draft-text);
+  --color-btn-draft-hover: var(--btn-draft-hover);
+  
+  --color-pending: var(--pending);
+  --color-paid: var(--paid);
+  --color-grand-total: var(--grand-total);
 }
 
 @layer base {
   body {
-    @apply transition-colors duration-300 text-text-main bg-background;
+    @apply transition-colors duration-300 bg-background text-text-main min-h-screen;
   }
 }
