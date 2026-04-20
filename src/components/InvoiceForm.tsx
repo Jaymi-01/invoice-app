@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Trash, CaretLeft, CaretDown, CaretRight } from '@phosphor-icons/react'
 import type { Invoice, Item } from '../types'
 
@@ -6,6 +6,8 @@ interface InvoiceFormProps {
   isOpen: boolean
   onClose: () => void
   onAddInvoice: (invoice: Invoice) => void
+  onUpdateInvoice: (invoice: Invoice) => void
+  invoiceToEdit?: Invoice | null
 }
 
 const terms = ['Net 1 Day', 'Net 7 Days', 'Net 14 Days', 'Net 30 Days']
@@ -30,7 +32,7 @@ const InputField = ({ label, name, value, onChange, error, placeholder, colSpan 
   </div>
 )
 
-const InvoiceForm = ({ isOpen, onClose, onAddInvoice }: InvoiceFormProps) => {
+const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceToEdit }: InvoiceFormProps) => {
   const initialFormState = {
     fromStreet: '',
     fromCity: '',
@@ -56,9 +58,33 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice }: InvoiceFormProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [viewDate, setViewDate] = useState(new Date())
 
+  useEffect(() => {
+    if (invoiceToEdit) {
+      setFormData({
+        fromStreet: invoiceToEdit.senderAddress.street,
+        fromCity: invoiceToEdit.senderAddress.city,
+        fromPostCode: invoiceToEdit.senderAddress.postCode,
+        fromCountry: invoiceToEdit.senderAddress.country,
+        clientName: invoiceToEdit.clientName,
+        clientEmail: invoiceToEdit.clientEmail,
+        toStreet: invoiceToEdit.clientAddress.street,
+        toCity: invoiceToEdit.clientAddress.city,
+        toPostCode: invoiceToEdit.clientAddress.postCode,
+        toCountry: invoiceToEdit.clientAddress.country,
+        description: invoiceToEdit.description,
+      })
+      setItems(invoiceToEdit.items)
+      setSelectedTerm(`Net ${invoiceToEdit.paymentTerms} Day${invoiceToEdit.paymentTerms > 1 ? 's' : ''}`)
+      // Parsing the string date back to Date object would be complex with 'd MMM yyyy', 
+      // typically we'd store a timestamp. For now, we'll keep the current date or parse if needed.
+    } else {
+      setFormData(initialFormState)
+      setItems([{ id: '1', name: '', quantity: 1, price: 0, total: 0 }])
+      setSelectedTerm(terms[3])
+    }
+  }, [invoiceToEdit, isOpen])
+
   const handleClose = () => {
-    setFormData(initialFormState)
-    setItems([{ id: '1', name: '', quantity: 1, price: 0, total: 0 }])
     setErrors({})
     setIsDropdownOpen(false)
     setIsCalendarOpen(false)
@@ -146,15 +172,15 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice }: InvoiceFormProps) => {
       const dueDate = new Date(invoiceDate)
       dueDate.setDate(dueDate.getDate() + termValue)
 
-      const newInvoice: Invoice = {
-        id: generateID(),
+      const invoiceData: Invoice = {
+        id: invoiceToEdit ? invoiceToEdit.id : generateID(),
         createdAt: formatDate(invoiceDate),
         paymentDue: formatDate(dueDate),
         description: formData.description,
         paymentTerms: termValue,
         clientName: formData.clientName,
         clientEmail: formData.clientEmail,
-        status: 'pending',
+        status: invoiceToEdit ? invoiceToEdit.status : 'pending',
         senderAddress: {
           street: formData.fromStreet,
           city: formData.fromCity,
@@ -170,7 +196,12 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice }: InvoiceFormProps) => {
         items: items,
         total: total
       }
-      onAddInvoice(newInvoice)
+      
+      if (invoiceToEdit) {
+        onUpdateInvoice(invoiceData)
+      } else {
+        onAddInvoice(invoiceData)
+      }
       handleClose()
     }
   }
@@ -185,7 +216,11 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice }: InvoiceFormProps) => {
           <button onClick={handleClose} className="mb-6 flex items-center text-[12px] font-bold tracking-tight text-[#0C0E1E] md:hidden">
             <CaretLeft weight="bold" size={12} className="mr-2 text-button" /> Go back
           </button>
-          <h1 className="mb-6 text-2xl font-bold tracking-tight text-[#0C0E1E] md:mb-12">New Invoice</h1>
+          <h1 className="mb-6 text-2xl font-bold tracking-tight text-[#0C0E1E] md:mb-12">
+            {invoiceToEdit ? (
+              <>Edit <span className="text-[#7E88C3]">#</span>{invoiceToEdit.id}</>
+            ) : 'New Invoice'}
+          </h1>
 
           <form id="invoice-form" onSubmit={validateForm} className="space-y-10">
             <section>
@@ -294,11 +329,23 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice }: InvoiceFormProps) => {
         </div>
 
         <footer className="flex shrink-0 items-center justify-between bg-white px-6 py-8 shadow-[0_-10px_20px_rgba(72,84,159,0.1)] md:px-14 md:shadow-none">
-          <button type="button" onClick={handleClose} className="rounded-full bg-discard-button px-4 py-4 text-[12px] font-bold text-[#7E88C3] hover:bg-[#DFE3FA]">Discard</button>
-          <div className="flex gap-2">
-            <button type="button" className="rounded-full bg-draft-button px-4 py-4 text-[12px] font-bold text-[#888EB0] hover:bg-[#0C0E1E]">Save as Draft</button>
-            <button form="invoice-form" type="submit" className="rounded-full bg-button px-4 py-4 text-[12px] font-bold text-white hover:bg-button-hover">Save & Send</button>
-          </div>
+          {invoiceToEdit ? (
+            <>
+              <div className="flex-1"></div>
+              <div className="flex gap-2">
+                <button type="button" onClick={handleClose} className="rounded-full bg-discard-button px-6 py-4 text-[12px] font-bold text-[#7E88C3] hover:bg-[#DFE3FA] transition-colors">Cancel</button>
+                <button form="invoice-form" type="submit" className="rounded-full bg-button px-6 py-4 text-[12px] font-bold text-white hover:bg-button-hover transition-colors">Save Changes</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <button type="button" onClick={handleClose} className="rounded-full bg-discard-button px-4 py-4 text-[12px] font-bold text-[#7E88C3] hover:bg-[#DFE3FA]">Discard</button>
+              <div className="flex gap-2">
+                <button type="button" className="rounded-full bg-draft-button px-4 py-4 text-[12px] font-bold text-[#888EB0] hover:bg-[#0C0E1E]">Save as Draft</button>
+                <button form="invoice-form" type="submit" className="rounded-full bg-button px-4 py-4 text-[12px] font-bold text-white hover:bg-button-hover">Save & Send</button>
+              </div>
+            </>
+          )}
         </footer>
       </div>
     </div>
