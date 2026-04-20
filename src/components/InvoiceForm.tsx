@@ -1,23 +1,36 @@
 import React, { useState } from 'react'
 import { Trash, CaretLeft, CaretDown, CaretRight } from '@phosphor-icons/react'
-
-interface Item {
-  id: string
-  name: string
-  quantity: number
-  price: number
-  total: number
-}
+import type { Invoice, Item } from '../types'
 
 interface InvoiceFormProps {
   isOpen: boolean
   onClose: () => void
+  onAddInvoice: (invoice: Invoice) => void
 }
 
 const terms = ['Net 1 Day', 'Net 7 Days', 'Net 14 Days', 'Net 30 Days']
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-const InvoiceForm = ({ isOpen, onClose }: InvoiceFormProps) => {
+const InputField = ({ label, name, value, onChange, error, placeholder, colSpan = "" }: any) => (
+  <div className={colSpan}>
+    <div className="flex justify-between items-center mb-2">
+      <label className={`text-[12px] font-medium ${error ? 'text-[#EC5757]' : 'text-[#7E88C3]'}`}>{label}</label>
+      {error && <span className="text-[10px] font-bold text-[#EC5757]">can't be empty</span>}
+    </div>
+    <input
+      type="text"
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className={`w-full rounded-[4px] border px-5 py-4 text-[12px] font-bold text-[#0C0E1E] focus:outline-none ${
+        error ? 'border-[#EC5757]' : 'border-[#DFE3FA] focus:border-button'
+      }`}
+    />
+  </div>
+)
+
+const InvoiceForm = ({ isOpen, onClose, onAddInvoice }: InvoiceFormProps) => {
   const initialFormState = {
     fromStreet: '',
     fromCity: '',
@@ -53,6 +66,15 @@ const InvoiceForm = ({ isOpen, onClose }: InvoiceFormProps) => {
   }
 
   const formatDate = (date: Date) => `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`
+
+  const generateID = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    const nums = '0123456789'
+    let id = ''
+    for (let i = 0; i < 2; i++) id += chars.charAt(Math.floor(Math.random() * chars.length))
+    for (let i = 0; i < 4; i++) id += nums.charAt(Math.floor(Math.random() * nums.length))
+    return id
+  }
 
   const generateCalendarDays = () => {
     const year = viewDate.getFullYear()
@@ -119,31 +141,41 @@ const InvoiceForm = ({ isOpen, onClose }: InvoiceFormProps) => {
     setErrors(newErrors)
 
     if (!hasError) {
-      console.log('Form Submitted', { ...formData, items, invoiceDate, selectedTerm })
+      const total = items.reduce((acc, item) => acc + item.total, 0)
+      const termValue = parseInt(selectedTerm.split(' ')[1])
+      const dueDate = new Date(invoiceDate)
+      dueDate.setDate(dueDate.getDate() + termValue)
+
+      const newInvoice: Invoice = {
+        id: generateID(),
+        createdAt: formatDate(invoiceDate),
+        paymentDue: formatDate(dueDate),
+        description: formData.description,
+        paymentTerms: termValue,
+        clientName: formData.clientName,
+        clientEmail: formData.clientEmail,
+        status: 'pending',
+        senderAddress: {
+          street: formData.fromStreet,
+          city: formData.fromCity,
+          postCode: formData.fromPostCode,
+          country: formData.fromCountry
+        },
+        clientAddress: {
+          street: formData.toStreet,
+          city: formData.toCity,
+          postCode: formData.toPostCode,
+          country: formData.toCountry
+        },
+        items: items,
+        total: total
+      }
+      onAddInvoice(newInvoice)
       handleClose()
     }
   }
 
   if (!isOpen) return null
-
-  const InputField = ({ label, name, value, placeholder, colSpan = "" }: any) => (
-    <div className={colSpan}>
-      <div className="flex justify-between items-center mb-2">
-        <label className={`text-[12px] font-medium ${errors[name] ? 'text-[#EC5757]' : 'text-[#7E88C3]'}`}>{label}</label>
-        {errors[name] && <span className="text-[10px] font-bold text-[#EC5757]">can't be empty</span>}
-      </div>
-      <input
-        type="text"
-        name={name}
-        value={value}
-        onChange={handleInputChange}
-        placeholder={placeholder}
-        className={`w-full rounded-[4px] border px-5 py-4 text-[12px] font-bold text-[#0C0E1E] focus:outline-none ${
-          errors[name] ? 'border-[#EC5757]' : 'border-[#DFE3FA] focus:border-button'
-        }`}
-      />
-    </div>
-  )
 
   return (
     <div className="fixed top-[72px] bottom-0 left-0 right-0 z-40 lg:top-0 lg:left-[103px]">
@@ -159,22 +191,22 @@ const InvoiceForm = ({ isOpen, onClose }: InvoiceFormProps) => {
             <section>
               <h3 className="mb-6 text-[12px] font-bold tracking-tight text-button">Bill From</h3>
               <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
-                <InputField label="Street Address" name="fromStreet" value={formData.fromStreet} colSpan="col-span-2 md:col-span-3" />
-                <InputField label="City" name="fromCity" value={formData.fromCity} />
-                <InputField label="Post Code" name="fromPostCode" value={formData.fromPostCode} />
-                <InputField label="Country" name="fromCountry" value={formData.fromCountry} colSpan="col-span-2 md:col-span-1" />
+                <InputField label="Street Address" name="fromStreet" value={formData.fromStreet} onChange={handleInputChange} error={errors.fromStreet} colSpan="col-span-2 md:col-span-3" />
+                <InputField label="City" name="fromCity" value={formData.fromCity} onChange={handleInputChange} error={errors.fromCity} />
+                <InputField label="Post Code" name="fromPostCode" value={formData.fromPostCode} onChange={handleInputChange} error={errors.fromPostCode} />
+                <InputField label="Country" name="fromCountry" value={formData.fromCountry} onChange={handleInputChange} error={errors.fromCountry} colSpan="col-span-2 md:col-span-1" />
               </div>
             </section>
 
             <section>
               <h3 className="mb-6 text-[12px] font-bold tracking-tight text-button">Bill To</h3>
               <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
-                <InputField label="Client's Name" name="clientName" value={formData.clientName} colSpan="col-span-2 md:col-span-3" />
-                <InputField label="Client's Email" name="clientEmail" value={formData.clientEmail} placeholder="e.g. email@example.com" colSpan="col-span-2 md:col-span-3" />
-                <InputField label="Street Address" name="toStreet" value={formData.toStreet} colSpan="col-span-2 md:col-span-3" />
-                <InputField label="City" name="toCity" value={formData.toCity} />
-                <InputField label="Post Code" name="toPostCode" value={formData.toPostCode} />
-                <InputField label="Country" name="toCountry" value={formData.toCountry} colSpan="col-span-2 md:col-span-1" />
+                <InputField label="Client's Name" name="clientName" value={formData.clientName} onChange={handleInputChange} error={errors.clientName} colSpan="col-span-2 md:col-span-3" />
+                <InputField label="Client's Email" name="clientEmail" value={formData.clientEmail} onChange={handleInputChange} error={errors.clientEmail} placeholder="e.g. email@example.com" colSpan="col-span-2 md:col-span-3" />
+                <InputField label="Street Address" name="toStreet" value={formData.toStreet} onChange={handleInputChange} error={errors.toStreet} colSpan="col-span-2 md:col-span-3" />
+                <InputField label="City" name="toCity" value={formData.toCity} onChange={handleInputChange} error={errors.toCity} />
+                <InputField label="Post Code" name="toPostCode" value={formData.toPostCode} onChange={handleInputChange} error={errors.toPostCode} />
+                <InputField label="Country" name="toCountry" value={formData.toCountry} onChange={handleInputChange} error={errors.toCountry} colSpan="col-span-2 md:col-span-1" />
               </div>
             </section>
 
@@ -224,7 +256,7 @@ const InvoiceForm = ({ isOpen, onClose }: InvoiceFormProps) => {
                   </div>
                 )}
               </div>
-              <InputField label="Project Description" name="description" value={formData.description} placeholder="e.g. Graphic Design Service" colSpan="md:col-span-2" />
+              <InputField label="Project Description" name="description" value={formData.description} onChange={handleInputChange} error={errors.description} placeholder="e.g. Graphic Design Service" colSpan="md:col-span-2" />
             </section>
 
             <section>
