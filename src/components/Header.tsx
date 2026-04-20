@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 import logo from '../assets/logo.svg'
 import { Sun, Moon } from '@phosphor-icons/react'
 
-const Header = () => {
-  const [isDark, setIsDark] = useState(false)
+interface HeaderProps {
+  isDark: boolean
+  onToggleTheme: () => void
+}
 
+const Header = ({ isDark, onToggleTheme }: HeaderProps) => {
   return (
     <header className="flex h-[72px] items-center bg-bg-header pr-6 lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-[103px] lg:flex-col lg:rounded-r-[20px] lg:pr-0 lg:pb-6 z-50">
       <div className="relative h-[72px] w-[72px] lg:h-[103px] lg:w-[103px]">
@@ -17,7 +20,7 @@ const Header = () => {
 
       <div className="ml-auto flex items-center lg:mt-auto lg:ml-0 lg:w-full lg:flex-col">
         <button 
-          onClick={() => setIsDark(!isDark)}
+          onClick={onToggleTheme}
           className="mr-6 lg:mr-0 lg:mb-8 cursor-pointer focus:outline-none"
           aria-label="Toggle dark mode"
         >
