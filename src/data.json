@@ -1,0 +1,105 @@
+[
+  {
+    "id": "RT3080",
+    "createdAt": "18 Aug 2021",
+    "paymentDue": "19 Aug 2021",
+    "description": "Re-branding",
+    "paymentTerms": 1,
+    "clientName": "Jensen Huang",
+    "clientEmail": "jensenh@mail.com",
+    "status": "paid",
+    "senderAddress": {
+      "street": "19 Union Terrace",
+      "city": "London",
+      "postCode": "E1 3EZ",
+      "country": "United Kingdom"
+    },
+    "clientAddress": {
+      "street": "106 Kendell Street",
+      "city": "Sharrington",
+      "postCode": "NR24 2PB",
+      "country": "United Kingdom"
+    },
+    "items": [
+      {
+        "id": "item-1",
+        "name": "Brand Guidelines",
+        "quantity": 1,
+        "price": 1800.90,
+        "total": 1800.90
+      }
+    ],
+    "total": 1800.90
+  },
+  {
+    "id": "XM9141",
+    "createdAt": "21 Aug 2021",
+    "paymentDue": "20 Sep 2021",
+    "description": "Graphic Design",
+    "paymentTerms": 30,
+    "clientName": "Alex Grim",
+    "clientEmail": "alexgrim@mail.com",
+    "status": "pending",
+    "senderAddress": {
+      "street": "19 Union Terrace",
+      "city": "London",
+      "postCode": "E1 3EZ",
+      "country": "United Kingdom"
+    },
+    "clientAddress": {
+      "street": "84 Church Way",
+      "city": "Bradford",
+      "postCode": "BD1 9PB",
+      "country": "United Kingdom"
+    },
+    "items": [
+      {
+        "id": "item-2",
+        "name": "Banner Design",
+        "quantity": 1,
+        "price": 156.00,
+        "total": 156.00
+      },
+      {
+        "id": "item-3",
+        "name": "Email Design",
+        "quantity": 2,
+        "price": 200.00,
+        "total": 400.00
+      }
+    ],
+    "total": 556.00
+  },
+  {
+    "id": "FV2353",
+    "createdAt": "05 Nov 2021",
+    "paymentDue": "12 Nov 2021",
+    "description": "Logo Concept",
+    "paymentTerms": 7,
+    "clientName": "Anita Wainwright",
+    "clientEmail": "anita.w@mail.com",
+    "status": "draft",
+    "senderAddress": {
+      "street": "19 Union Terrace",
+      "city": "London",
+      "postCode": "E1 3EZ",
+      "country": "United Kingdom"
+    },
+    "clientAddress": {
+      "street": "3950 North Street",
+      "city": "London",
+      "postCode": "E1 3EZ",
+      "country": "United Kingdom"
+    },
+    "items": [
+      {
+        "id": "item-4",
+        "name": "Logo Sketches",
+        "quantity": 1,
+        "price": 102.04,
+        "total": 102.04
+      }
+    ],
+    "total": 102.04
+  }
+]
