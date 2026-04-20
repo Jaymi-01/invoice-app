@@ -24,7 +24,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
   }
 
   return (
-    <div className="flex h-[calc(100vh-72px)] flex-col lg:h-auto lg:block">
+    <div className="flex h-screen flex-col lg:h-auto lg:block">
       {isDeleteModalOpen && (
         <DeleteModal 
           invoiceId={invoice.id} 
@@ -37,7 +37,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
       )}
 
       {/* Scrollable Content */}
-      <main className="flex-1 overflow-y-auto px-6 py-8 lg:max-w-[730px] lg:mx-auto lg:py-16">
+      <main className="flex-1 overflow-y-auto px-6 py-8 md:px-12 md:py-14 lg:max-w-[730px] lg:mx-auto lg:py-16">
         <button 
           onClick={onBack}
           className="mb-8 flex items-center text-[12px] font-bold tracking-tight text-text-main group transition-colors"
@@ -47,8 +47,8 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
         </button>
 
         {/* Status Bar */}
-        <div className="flex items-center justify-between bg-container rounded-lg p-6 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] mb-4 transition-colors">
-          <div className="flex items-center justify-between w-full md:w-auto md:gap-4">
+        <div className="flex items-center justify-between bg-container rounded-lg p-6 md:px-8 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] mb-4 transition-colors">
+          <div className="flex items-center justify-between w-full md:w-auto md:gap-5">
             <span className="text-text-secondary text-[12px] font-medium transition-colors">Status</span>
             <div className={`flex items-center justify-center w-[104px] py-3 rounded-md capitalize font-bold text-[12px] transition-colors ${getStatusStyles(invoice.status as any)}`}>
               <div className={`w-2 h-2 rounded-full mr-2 ${
@@ -58,25 +58,26 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
               {invoice.status}
             </div>
           </div>
-          <div className="hidden md:flex gap-2">
+          
+          <div className="hidden md:flex items-center gap-2">
             <button onClick={onEdit} className="rounded-full bg-btn-secondary-bg px-6 py-4 text-[12px] font-bold text-btn-secondary-text lg:hover:bg-btn-secondary-hover transition-colors cursor-pointer">Edit</button>
             <button onClick={() => setIsDeleteModalOpen(true)} className="rounded-full bg-[#EC5757] px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-[#FF9797] transition-colors cursor-pointer">Delete</button>
             {invoice.status === 'pending' && (
-              <button onClick={() => onMarkAsPaid(invoice.id)} className="rounded-full bg-[#7C5DFA] px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-button-hover transition-colors cursor-pointer">Mark as Paid</button>
+              <button onClick={() => onMarkAsPaid(invoice.id)} className="rounded-full bg-button px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-button-hover transition-colors cursor-pointer">Mark as Paid</button>
             )}
           </div>
         </div>
 
         {/* Details Card */}
-        <div className="bg-container rounded-lg p-6 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] md:p-12 transition-colors">
-          <div className="flex flex-col md:flex-row md:justify-between mb-8">
+        <div className="bg-container rounded-lg p-6 md:p-8 lg:p-12 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] transition-colors">
+          <div className="flex flex-col md:flex-row md:justify-between mb-8 md:mb-5">
             <div className="mb-8 md:mb-0">
               <h1 className="font-bold text-text-main text-base mb-1 transition-colors">
                 <span className="text-text-accent">#</span>{invoice.id}
               </h1>
               <p className="text-text-secondary text-[12px] transition-colors">{invoice.description}</p>
             </div>
-            <div className="text-text-secondary text-[12px] md:text-right transition-colors">
+            <div className="text-text-secondary text-[12px] md:text-right transition-colors leading-6">
               <p>{invoice.senderAddress.street}</p>
               <p>{invoice.senderAddress.city}</p>
               <p>{invoice.senderAddress.postCode}</p>
@@ -84,7 +85,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-3 mb-10">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 md:mb-12 mb-10">
             <div className="flex flex-col justify-between">
               <div>
                 <span className="text-text-secondary text-[12px] mb-3 block transition-colors">Invoice Date</span>
@@ -99,7 +100,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
             <div>
               <span className="text-text-secondary text-[12px] mb-3 block transition-colors">Bill To</span>
               <span className="text-text-main text-[15px] font-bold mb-2 block transition-colors">{invoice.clientName}</span>
-              <div className="text-text-secondary text-[12px] transition-colors">
+              <div className="text-text-secondary text-[12px] transition-colors leading-6">
                 <p>{invoice.clientAddress.street}</p>
                 <p>{invoice.clientAddress.city}</p>
                 <p>{invoice.clientAddress.postCode}</p>
@@ -115,7 +116,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
 
           {/* Items Table */}
           <div className="bg-btn-secondary-bg rounded-t-lg p-6 md:p-8 transition-colors">
-            <div className="hidden md:grid grid-cols-4 mb-8 text-text-secondary text-[12px] transition-colors">
+            <div className="hidden md:grid md:grid-cols-[3fr_1fr_1fr_1fr] mb-8 text-text-secondary text-[12px] transition-colors">
               <span>Item Name</span>
               <span className="text-center">QTY.</span>
               <span className="text-right">Price</span>
@@ -123,7 +124,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
             </div>
             <div className="space-y-6">
               {invoice.items.map((item) => (
-                <div key={item.id} className="flex items-center justify-between md:grid md:grid-cols-4">
+                <div key={item.id} className="flex items-center justify-between md:grid md:grid-cols-[3fr_1fr_1fr_1fr]">
                   <div className="flex flex-col md:block">
                     <span className="text-text-main text-[12px] font-bold mb-2 md:mb-0 transition-colors">{item.name}</span>
                     <span className="text-text-secondary text-[12px] font-bold md:hidden transition-colors">{item.quantity} x £ {item.price.toFixed(2)}</span>
@@ -136,9 +137,8 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
             </div>
           </div>
           
-          <div className="bg-grand-total rounded-b-lg p-6 md:px-8 flex items-center justify-between text-white transition-colors duration-300">
-            <span className="text-[12px] md:hidden">Grand Total</span>
-            <span className="hidden md:block text-[12px]">Amount Due</span>
+          <div className="bg-color-grand-total rounded-b-lg p-6 md:px-8 flex items-center justify-between text-white transition-colors duration-300">
+            <span className="text-[12px] md:block">Amount Due</span>
             <span className="text-2xl font-bold">£ {invoice.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         </div>
@@ -149,7 +149,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
         <button onClick={onEdit} className="rounded-full bg-btn-secondary-bg px-6 py-4 text-[12px] font-bold text-btn-secondary-text lg:hover:bg-btn-secondary-hover transition-colors cursor-pointer">Edit</button>
         <button onClick={() => setIsDeleteModalOpen(true)} className="rounded-full bg-[#EC5757] px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-[#FF9797] transition-colors cursor-pointer">Delete</button>
         {invoice.status === 'pending' && (
-          <button onClick={() => onMarkAsPaid(invoice.id)} className="rounded-full bg-[#7C5DFA] px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-button-hover transition-colors cursor-pointer">Mark as Paid</button>
+          <button onClick={() => onMarkAsPaid(invoice.id)} className="rounded-full bg-button px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-button-hover transition-colors cursor-pointer">Mark as Paid</button>
         )}
       </footer>
     </div>
