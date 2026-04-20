@@ -10,7 +10,7 @@ interface HeaderProps {
 const Header = ({ isDark, onToggleTheme }: HeaderProps) => {
   return (
     <header className="flex h-[72px] items-center bg-bg-header pr-6 lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-[103px] lg:flex-col lg:rounded-r-[20px] lg:pr-0 lg:pb-6 z-50">
-      <div className="relative h-[72px] w-[72px] lg:h-[103px] lg:w-[103px]">
+      <div className="relative h-[72px] w-[72px] lg:h-[103px] lg:w-[103px] cursor-pointer">
         <img 
           src={logo} 
           alt="Invoice Logo" 
