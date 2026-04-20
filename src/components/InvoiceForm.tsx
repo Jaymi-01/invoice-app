@@ -16,7 +16,7 @@ const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const InputField = ({ label, name, value, onChange, error, placeholder, colSpan = "" }: any) => (
   <div className={colSpan}>
     <div className="flex justify-between items-center mb-2">
-      <label className={`text-[12px] font-medium ${error ? 'text-[#EC5757]' : 'text-[#7E88C3]'}`}>{label}</label>
+      <label className={`text-[12px] font-medium transition-colors ${error ? 'text-[#EC5757]' : 'text-text-secondary dark:text-text-secondary'}`}>{label}</label>
       {error && <span className="text-[10px] font-bold text-[#EC5757]">can't be empty</span>}
     </div>
     <input
@@ -25,8 +25,8 @@ const InputField = ({ label, name, value, onChange, error, placeholder, colSpan 
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className={`w-full rounded-[4px] border px-5 py-4 text-[12px] font-bold text-[#0C0E1E] focus:outline-none ${
-        error ? 'border-[#EC5757]' : 'border-[#DFE3FA] focus:border-button'
+      className={`w-full rounded-[4px] border bg-container px-5 py-4 text-[12px] font-bold text-text-main focus:outline-none transition-colors ${
+        error ? 'border-[#EC5757]' : 'border-input-border focus:border-button'
       }`}
     />
   </div>
@@ -75,8 +75,6 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
       })
       setItems(invoiceToEdit.items)
       setSelectedTerm(`Net ${invoiceToEdit.paymentTerms} Day${invoiceToEdit.paymentTerms > 1 ? 's' : ''}`)
-      // Parsing the string date back to Date object would be complex with 'd MMM yyyy', 
-      // typically we'd store a timestamp. For now, we'll keep the current date or parse if needed.
     } else {
       setFormData(initialFormState)
       setItems([{ id: '1', name: '', quantity: 1, price: 0, total: 0 }])
@@ -145,6 +143,45 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
     if (items.length > 1) setItems(items.filter(item => item.id !== id))
   }
 
+  const handleSaveDraft = () => {
+    const total = items.reduce((acc, item) => acc + item.total, 0)
+    const termValue = parseInt(selectedTerm.split(' ')[1])
+    const dueDate = new Date(invoiceDate)
+    dueDate.setDate(dueDate.getDate() + (isNaN(termValue) ? 30 : termValue))
+
+    const newInvoice: Invoice = {
+      id: invoiceToEdit ? invoiceToEdit.id : generateID(),
+      createdAt: formatDate(invoiceDate),
+      paymentDue: formatDate(dueDate),
+      description: formData.description || '',
+      paymentTerms: isNaN(termValue) ? 30 : termValue,
+      clientName: formData.clientName || '',
+      clientEmail: formData.clientEmail || '',
+      status: 'draft',
+      senderAddress: {
+        street: formData.fromStreet || '',
+        city: formData.fromCity || '',
+        postCode: formData.fromPostCode || '',
+        country: formData.fromCountry || ''
+      },
+      clientAddress: {
+        street: formData.toStreet || '',
+        city: formData.toCity || '',
+        postCode: formData.toPostCode || '',
+        country: formData.toCountry || ''
+      },
+      items: items,
+      total: total
+    }
+
+    if (invoiceToEdit) {
+      onUpdateInvoice(newInvoice)
+    } else {
+      onAddInvoice(newInvoice)
+    }
+    handleClose()
+  }
+
   const validateForm = (e: React.FormEvent) => {
     e.preventDefault()
     const newErrors: Record<string, boolean> = {}
@@ -211,14 +248,14 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
   return (
     <div className="fixed top-[72px] bottom-0 left-0 right-0 z-40 lg:top-0 lg:left-[103px]">
       <div className="absolute inset-0 bg-black/50" onClick={handleClose}></div>
-      <div className="relative flex h-full w-full max-w-[616px] flex-col bg-white md:rounded-r-[20px]">
+      <div className="relative flex h-full w-full max-w-[616px] flex-col bg-background dark:bg-dark-bg md:rounded-r-[20px] transition-colors duration-300">
         <div className="flex-1 overflow-y-auto px-6 py-8 md:px-14 md:py-16">
-          <button onClick={handleClose} className="mb-6 flex items-center text-[12px] font-bold tracking-tight text-[#0C0E1E] md:hidden">
+          <button onClick={handleClose} className="mb-6 flex items-center text-[12px] font-bold tracking-tight text-text-main md:hidden">
             <CaretLeft weight="bold" size={12} className="mr-2 text-button" /> Go back
           </button>
-          <h1 className="mb-6 text-2xl font-bold tracking-tight text-[#0C0E1E] md:mb-12">
+          <h1 className="mb-6 text-2xl font-bold tracking-tight text-text-main md:mb-12">
             {invoiceToEdit ? (
-              <>Edit <span className="text-[#7E88C3]">#</span>{invoiceToEdit.id}</>
+              <>Edit <span className="text-text-secondary">#</span>{invoiceToEdit.id}</>
             ) : 'New Invoice'}
           </h1>
 
@@ -247,22 +284,22 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
 
             <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="relative">
-                <label className="mb-2 block text-[12px] font-medium text-[#7E88C3]">Invoice Date</label>
-                <div onClick={() => setIsCalendarOpen(!isCalendarOpen)} className="flex w-full items-center justify-between rounded-[4px] border border-[#DFE3FA] px-5 py-4 text-[12px] font-bold text-[#0C0E1E] cursor-pointer">
+                <label className="mb-2 block text-[12px] font-medium text-text-secondary transition-colors">Invoice Date</label>
+                <div onClick={() => setIsCalendarOpen(!isCalendarOpen)} className="flex w-full items-center justify-between rounded-[4px] border border-input-border bg-container px-5 py-4 text-[12px] font-bold text-text-main cursor-pointer transition-colors">
                   <span>{formatDate(invoiceDate)}</span>
                   <CaretDown weight="bold" size={12} className="text-button" />
                 </div>
                 {isCalendarOpen && (
-                  <div className="absolute top-full left-0 z-20 mt-2 w-full rounded-[8px] bg-white p-6 shadow-[0_10px_20px_rgba(72,84,159,0.25)]">
+                  <div className="absolute top-full left-0 z-20 mt-2 w-full rounded-[8px] bg-container p-6 shadow-[0_10px_20px_rgba(72,84,159,0.25)] transition-colors">
                     <div className="mb-8 flex items-center justify-between">
                       <button type="button" onClick={() => changeMonth(-1)} className="text-button"><CaretLeft weight="bold" size={12} /></button>
-                      <span className="text-[12px] font-bold text-[#0C0E1E]">{months[viewDate.getMonth()]} {viewDate.getFullYear()}</span>
+                      <span className="text-[12px] font-bold text-text-main transition-colors">{months[viewDate.getMonth()]} {viewDate.getFullYear()}</span>
                       <button type="button" onClick={() => changeMonth(1)} className="text-button"><CaretRight weight="bold" size={12} /></button>
                     </div>
                     <div className="grid grid-cols-7 gap-y-4 text-center">
                       {generateCalendarDays().map((date, i) => (
                         <div key={i}>{date && (
-                          <button type="button" onClick={() => { setInvoiceDate(date); setIsCalendarOpen(false); }} className={`text-[12px] font-bold hover:text-button ${date.toDateString() === invoiceDate.toDateString() ? 'text-button' : 'text-[#0C0E1E]'}`}>
+                          <button type="button" onClick={() => { setInvoiceDate(date); setIsCalendarOpen(false); }} className={`text-[12px] font-bold hover:text-button transition-colors ${date.toDateString() === invoiceDate.toDateString() ? 'text-button' : 'text-text-main'}`}>
                             {date.getDate()}
                           </button>
                         )}</div>
@@ -273,19 +310,19 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
               </div>
 
               <div className="relative">
-                <label className="mb-2 block text-[12px] font-medium text-[#7E88C3]">Payment Terms</label>
-                <div onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex w-full items-center justify-between rounded-[4px] border border-[#DFE3FA] px-5 py-4 text-[12px] font-bold text-[#0C0E1E] cursor-pointer">
+                <label className="mb-2 block text-[12px] font-medium text-text-secondary transition-colors">Payment Terms</label>
+                <div onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex w-full items-center justify-between rounded-[4px] border border-input-border bg-container px-5 py-4 text-[12px] font-bold text-text-main cursor-pointer transition-colors">
                   <span>{selectedTerm}</span>
                   <CaretDown weight="bold" size={12} className={`text-button transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </div>
                 {isDropdownOpen && (
-                  <div className="absolute top-full left-0 z-10 mt-2 w-full rounded-[8px] bg-white shadow-[0_10px_20px_rgba(72,84,159,0.25)] overflow-hidden">
+                  <div className="absolute top-full left-0 z-10 mt-2 w-full rounded-[8px] bg-container shadow-[0_10px_20px_rgba(72,84,159,0.25)] overflow-hidden transition-colors">
                     {terms.map((term, index) => (
                       <div key={term}>
-                        <button type="button" onClick={() => { setSelectedTerm(term); setIsDropdownOpen(false); }} className={`w-full px-5 py-4 text-left text-[12px] font-bold hover:text-button ${selectedTerm === term ? 'text-button' : 'text-[#0C0E1E]'}`}>
+                        <button type="button" onClick={() => { setSelectedTerm(term); setIsDropdownOpen(false); }} className={`w-full px-5 py-4 text-left text-[12px] font-bold hover:text-button transition-colors ${selectedTerm === term ? 'text-button' : 'text-text-main'}`}>
                           {term}
                         </button>
-                        {index !== terms.length - 1 && <div className="h-[1px] bg-[#DFE3FA]"></div>}
+                        {index !== terms.length - 1 && <div className="h-[1px] bg-input-border opacity-50 transition-colors"></div>}
                       </div>
                     ))}
                   </div>
@@ -295,54 +332,53 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
             </section>
 
             <section>
-              <h2 className="mb-4 text-[18px] font-bold tracking-tight text-[#777F98]">Item List</h2>
+              <h2 className="mb-4 text-[18px] font-bold tracking-tight text-[#777F98] transition-colors">Item List</h2>
               <div className="space-y-12 md:space-y-4">
                 {items.map(item => (
                   <div key={item.id} className="grid grid-cols-[64px_100px_1fr_auto] gap-x-4 gap-y-6 items-end md:grid-cols-[2.5fr_1fr_1.5fr_1fr_auto]">
                     <div className="col-span-4 order-2 md:col-span-1 md:order-1">
-                      <label className={`mb-2 block text-[12px] font-medium ${errors[`item-${item.id}`] && !item.name ? 'text-[#EC5757]' : 'text-[#7E88C3]'}`}>Item Name</label>
-                      <input type="text" value={item.name} onChange={(e) => handleItemChange(item.id, 'name', e.target.value)} className={`w-full rounded-[4px] border px-5 py-4 text-[12px] font-bold text-[#0C0E1E] focus:outline-none ${errors[`item-${item.id}`] && !item.name ? 'border-[#EC5757]' : 'border-[#DFE3FA] focus:border-button'}`} />
+                      <label className={`mb-2 block text-[12px] font-medium transition-colors ${errors[`item-${item.id}`] && !item.name ? 'text-[#EC5757]' : 'text-text-secondary'}`}>Item Name</label>
+                      <input type="text" value={item.name} onChange={(e) => handleItemChange(item.id, 'name', e.target.value)} className={`w-full rounded-[4px] border bg-container px-5 py-4 text-[12px] font-bold text-text-main focus:outline-none transition-colors ${errors[`item-${item.id}`] && !item.name ? 'border-[#EC5757]' : 'border-input-border focus:border-button'}`} />
                     </div>
                     <div className="order-1 md:order-2">
-                      <label className="mb-2 block text-[12px] font-medium text-[#7E88C3]">Qty.</label>
-                      <input type="number" value={item.quantity} onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)} className="w-full rounded-[4px] border border-[#DFE3FA] px-2 py-4 text-center text-[12px] font-bold text-[#0C0E1E] focus:border-button focus:outline-none" />
+                      <label className="mb-2 block text-[12px] font-medium text-text-secondary transition-colors">Qty.</label>
+                      <input type="number" value={item.quantity} onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)} className="w-full rounded-[4px] border border-input-border bg-container px-2 py-4 text-center text-[12px] font-bold text-text-main focus:border-button focus:outline-none transition-colors" />
                     </div>
                     <div className="order-1 md:order-3">
-                      <label className="mb-2 block text-[12px] font-medium text-[#7E88C3]">Price</label>
-                      <input type="number" value={item.price} onChange={(e) => handleItemChange(item.id, 'price', e.target.value)} className="w-full rounded-[4px] border border-[#DFE3FA] px-4 py-4 text-[12px] font-bold text-[#0C0E1E] focus:border-button focus:outline-none" />
+                      <label className="mb-2 block text-[12px] font-medium text-text-secondary transition-colors">Price</label>
+                      <input type="number" value={item.price} onChange={(e) => handleItemChange(item.id, 'price', e.target.value)} className="w-full rounded-[4px] border border-input-border bg-container px-4 py-4 text-[12px] font-bold text-text-main focus:border-button focus:outline-none transition-colors" />
                     </div>
                     <div className="order-1 md:order-4">
-                      <label className="mb-2 block text-[12px] font-medium text-[#7E88C3]">Total</label>
-                      <p className="py-4 text-[12px] font-bold text-[#7E88C3]">{item.total.toFixed(2)}</p>
+                      <label className="mb-2 block text-[12px] font-medium text-text-secondary transition-colors">Total</label>
+                      <p className="py-4 text-[12px] font-bold text-text-secondary transition-colors">{item.total.toFixed(2)}</p>
                     </div>
                     <div className="order-1 flex justify-end pb-4 md:order-5">
-                      <button type="button" onClick={() => removeItem(item.id)} className="text-[#888EB0] hover:text-[#EC5757]"><Trash size={16} weight="bold" /></button>
+                      <button type="button" onClick={() => removeItem(item.id)} className="text-[#888EB0] hover:text-[#EC5757] transition-colors cursor-pointer"><Trash size={16} weight="bold" /></button>
                     </div>
                   </div>
                 ))}
-                <button type="button" onClick={addNewItem} className="w-full rounded-full bg-discard-button py-4 text-[12px] font-bold text-[#7E88C3] hover:bg-[#DFE3FA]">+ Add New Item</button>
+                <button type="button" onClick={addNewItem} className="w-full rounded-full bg-discard-button dark:bg-[#252945] dark:text-text-secondary py-4 text-[12px] font-bold text-text-accent hover:bg-input-border dark:hover:bg-white transition-colors cursor-pointer">+ Add New Item</button>
               </div>
-              {errors.items && <p className="mt-8 text-[10px] font-semibold text-[#EC5757]">- An item must be added</p>}
-              {Object.keys(errors).length > 0 && <p className="mt-4 text-[10px] font-semibold text-[#EC5757]">- All fields must be added</p>}
+              {Object.keys(errors).length > 0 && <p className="mt-8 text-[10px] font-semibold text-[#EC5757] transition-colors">- All fields must be added</p>}
             </section>
           </form>
         </div>
 
-        <footer className="flex shrink-0 items-center justify-between bg-white px-6 py-8 shadow-[0_-10px_20px_rgba(72,84,159,0.1)] md:px-14 md:shadow-none">
+        <footer className="flex shrink-0 items-center justify-between bg-container px-6 py-8 shadow-[0_-10px_20px_rgba(72,84,159,0.1)] md:px-14 md:shadow-none transition-colors duration-300">
           {invoiceToEdit ? (
             <>
               <div className="flex-1"></div>
               <div className="flex gap-2">
-                <button type="button" onClick={handleClose} className="rounded-full bg-discard-button px-6 py-4 text-[12px] font-bold text-[#7E88C3] hover:bg-[#DFE3FA] transition-colors">Cancel</button>
-                <button form="invoice-form" type="submit" className="rounded-full bg-button px-6 py-4 text-[12px] font-bold text-white hover:bg-button-hover transition-colors">Save Changes</button>
+                <button type="button" onClick={handleClose} className="rounded-full bg-discard-button dark:bg-[#252945] dark:text-text-secondary px-6 py-4 text-[12px] font-bold text-text-accent hover:bg-input-border dark:hover:bg-white transition-colors cursor-pointer">Cancel</button>
+                <button form="invoice-form" type="submit" className="rounded-full bg-button px-6 py-4 text-[12px] font-bold text-white hover:bg-button-hover transition-colors cursor-pointer">Save Changes</button>
               </div>
             </>
           ) : (
             <>
-              <button type="button" onClick={handleClose} className="rounded-full bg-discard-button px-4 py-4 text-[12px] font-bold text-[#7E88C3] hover:bg-[#DFE3FA]">Discard</button>
+              <button type="button" onClick={handleClose} className="rounded-full bg-discard-button dark:bg-[#252945] dark:text-text-secondary px-4 py-4 text-[12px] font-bold text-text-accent hover:bg-input-border dark:hover:bg-white transition-colors cursor-pointer">Discard</button>
               <div className="flex gap-2">
-                <button type="button" className="rounded-full bg-draft-button px-4 py-4 text-[12px] font-bold text-[#888EB0] hover:bg-[#0C0E1E]">Save as Draft</button>
-                <button form="invoice-form" type="submit" className="rounded-full bg-button px-4 py-4 text-[12px] font-bold text-white hover:bg-button-hover">Save & Send</button>
+                <button type="button" onClick={handleSaveDraft} className="rounded-full bg-draft-button px-4 py-4 text-[12px] font-bold text-text-secondary hover:bg-text-main dark:hover:bg-dark-bg transition-colors cursor-pointer">Save as Draft</button>
+                <button form="invoice-form" type="submit" className="rounded-full bg-button px-4 py-4 text-[12px] font-bold text-white hover:bg-button-hover transition-colors cursor-pointer">Save & Send</button>
               </div>
             </>
           )}
