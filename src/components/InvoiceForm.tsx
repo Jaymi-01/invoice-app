@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Trash, CaretLeft, CaretDown, CaretRight } from '@phosphor-icons/react'
 import type { Invoice, Item } from '../types'
 
@@ -13,10 +13,20 @@ interface InvoiceFormProps {
 const terms = ['Net 1 Day', 'Net 7 Days', 'Net 14 Days', 'Net 30 Days']
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-const InputField = ({ label, name, value, onChange, error, placeholder, colSpan = "" }: any) => (
+interface InputFieldProps {
+  label: string
+  name: string
+  value: string | number
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  error?: boolean
+  placeholder?: string
+  colSpan?: string
+}
+
+const InputField = ({ label, name, value, onChange, error, placeholder, colSpan = "" }: InputFieldProps) => (
   <div className={colSpan}>
     <div className="flex justify-between items-center mb-2">
-      <label className={`text-[12px] font-medium transition-colors ${error ? 'text-[#EC5757]' : 'text-text-secondary dark:text-text-secondary'}`}>{label}</label>
+      <label className={`text-[12px] font-medium transition-colors ${error ? 'text-[#EC5757]' : 'text-text-secondary'}`}>{label}</label>
       {error && <span className="text-[10px] font-bold text-[#EC5757]">can't be empty</span>}
     </div>
     <input
@@ -34,53 +44,33 @@ const InputField = ({ label, name, value, onChange, error, placeholder, colSpan 
 
 const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceToEdit }: InvoiceFormProps) => {
   const initialFormState = {
-    fromStreet: '',
-    fromCity: '',
-    fromPostCode: '',
-    fromCountry: '',
-    clientName: '',
-    clientEmail: '',
-    toStreet: '',
-    toCity: '',
-    toPostCode: '',
-    toCountry: '',
-    description: '',
+    fromStreet: invoiceToEdit?.senderAddress.street || '',
+    fromCity: invoiceToEdit?.senderAddress.city || '',
+    fromPostCode: invoiceToEdit?.senderAddress.postCode || '',
+    fromCountry: invoiceToEdit?.senderAddress.country || '',
+    clientName: invoiceToEdit?.clientName || '',
+    clientEmail: invoiceToEdit?.clientEmail || '',
+    toStreet: invoiceToEdit?.clientAddress.street || '',
+    toCity: invoiceToEdit?.clientAddress.city || '',
+    toPostCode: invoiceToEdit?.clientAddress.postCode || '',
+    toCountry: invoiceToEdit?.clientAddress.country || '',
+    description: invoiceToEdit?.description || '',
   }
 
   const [formData, setFormData] = useState(initialFormState)
-  const [items, setItems] = useState<Item[]>([
-    { id: '1', name: '', quantity: 1, price: 0, total: 0 }
-  ])
+  const [items, setItems] = useState<Item[]>(() => 
+    invoiceToEdit?.items || [{ id: '1', name: '', quantity: 1, price: 0, total: 0 }]
+  )
   const [errors, setErrors] = useState<Record<string, boolean>>({})
-  const [selectedTerm, setSelectedTerm] = useState(terms[3])
+  const [selectedTerm, setSelectedTerm] = useState(() => 
+    invoiceToEdit ? `Net ${invoiceToEdit.paymentTerms} Day${invoiceToEdit.paymentTerms > 1 ? 's' : ''}` : terms[3]
+  )
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [invoiceDate, setInvoiceDate] = useState(new Date())
+  const [invoiceDate, setInvoiceDate] = useState(() => 
+    invoiceToEdit ? new Date(invoiceToEdit.createdAt) : new Date()
+  )
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [viewDate, setViewDate] = useState(new Date())
-
-  useEffect(() => {
-    if (invoiceToEdit) {
-      setFormData({
-        fromStreet: invoiceToEdit.senderAddress.street,
-        fromCity: invoiceToEdit.senderAddress.city,
-        fromPostCode: invoiceToEdit.senderAddress.postCode,
-        fromCountry: invoiceToEdit.senderAddress.country,
-        clientName: invoiceToEdit.clientName,
-        clientEmail: invoiceToEdit.clientEmail,
-        toStreet: invoiceToEdit.clientAddress.street,
-        toCity: invoiceToEdit.clientAddress.city,
-        toPostCode: invoiceToEdit.clientAddress.postCode,
-        toCountry: invoiceToEdit.clientAddress.country,
-        description: invoiceToEdit.description,
-      })
-      setItems(invoiceToEdit.items)
-      setSelectedTerm(`Net ${invoiceToEdit.paymentTerms} Day${invoiceToEdit.paymentTerms > 1 ? 's' : ''}`)
-    } else {
-      setFormData(initialFormState)
-      setItems([{ id: '1', name: '', quantity: 1, price: 0, total: 0 }])
-      setSelectedTerm(terms[3])
-    }
-  }, [invoiceToEdit, isOpen])
 
   const handleClose = () => {
     setErrors({})
@@ -248,12 +238,12 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
   return (
     <div className="fixed top-[72px] bottom-0 left-0 right-0 z-40 lg:top-0 lg:left-[103px]">
       <div className="absolute inset-0 bg-black/50" onClick={handleClose}></div>
-      <div className="relative flex h-full w-full max-w-[616px] flex-col bg-background dark:bg-dark-bg md:rounded-r-[20px] transition-colors duration-300">
+      <div className="relative flex h-full w-full max-w-[616px] flex-col bg-background md:rounded-r-[20px] transition-colors duration-300">
         <div className="flex-1 overflow-y-auto px-6 py-8 md:px-14 md:py-16">
-          <button onClick={handleClose} className="mb-6 flex items-center text-[12px] font-bold tracking-tight text-text-main md:hidden">
+          <button onClick={handleClose} className="mb-6 flex items-center text-[12px] font-bold tracking-tight text-text-main md:hidden transition-colors">
             <CaretLeft weight="bold" size={12} className="mr-2 text-button" /> Go back
           </button>
-          <h1 className="mb-6 text-2xl font-bold tracking-tight text-text-main md:mb-12">
+          <h1 className="mb-6 text-2xl font-bold tracking-tight text-text-main md:mb-12 transition-colors">
             {invoiceToEdit ? (
               <>Edit <span className="text-text-secondary">#</span>{invoiceToEdit.id}</>
             ) : 'New Invoice'}
@@ -299,7 +289,7 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
                     <div className="grid grid-cols-7 gap-y-4 text-center">
                       {generateCalendarDays().map((date, i) => (
                         <div key={i}>{date && (
-                          <button type="button" onClick={() => { setInvoiceDate(date); setIsCalendarOpen(false); }} className={`text-[12px] font-bold hover:text-button transition-colors ${date.toDateString() === invoiceDate.toDateString() ? 'text-button' : 'text-text-main'}`}>
+                          <button type="button" onClick={() => { setInvoiceDate(date); setIsCalendarOpen(false); }} className={`text-[12px] font-bold lg:hover:text-button transition-colors ${date.toDateString() === invoiceDate.toDateString() ? 'text-button' : 'text-text-main'}`}>
                             {date.getDate()}
                           </button>
                         )}</div>
@@ -319,7 +309,7 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
                   <div className="absolute top-full left-0 z-10 mt-2 w-full rounded-[8px] bg-container shadow-[0_10px_20px_rgba(72,84,159,0.25)] overflow-hidden transition-colors">
                     {terms.map((term, index) => (
                       <div key={term}>
-                        <button type="button" onClick={() => { setSelectedTerm(term); setIsDropdownOpen(false); }} className={`w-full px-5 py-4 text-left text-[12px] font-bold hover:text-button transition-colors ${selectedTerm === term ? 'text-button' : 'text-text-main'}`}>
+                        <button type="button" onClick={() => { setSelectedTerm(term); setIsDropdownOpen(false); }} className={`w-full px-5 py-4 text-left text-[12px] font-bold lg:hover:text-button transition-colors ${selectedTerm === term ? 'text-button' : 'text-text-main'}`}>
                           {term}
                         </button>
                         {index !== terms.length - 1 && <div className="h-[1px] bg-input-border opacity-50 transition-colors"></div>}
@@ -353,11 +343,11 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
                       <p className="py-4 text-[12px] font-bold text-text-secondary transition-colors">{item.total.toFixed(2)}</p>
                     </div>
                     <div className="order-1 flex justify-end pb-4 md:order-5">
-                      <button type="button" onClick={() => removeItem(item.id)} className="text-[#888EB0] hover:text-[#EC5757] transition-colors cursor-pointer"><Trash size={16} weight="bold" /></button>
+                      <button type="button" onClick={() => removeItem(item.id)} className="text-[#888EB0] lg:hover:text-[#EC5757] transition-colors cursor-pointer"><Trash size={16} weight="bold" /></button>
                     </div>
                   </div>
                 ))}
-                <button type="button" onClick={addNewItem} className="w-full rounded-full bg-discard-button dark:bg-[#252945] dark:text-text-secondary py-4 text-[12px] font-bold text-text-accent hover:bg-input-border dark:hover:bg-white transition-colors cursor-pointer">+ Add New Item</button>
+                <button type="button" onClick={addNewItem} className="w-full rounded-full bg-btn-secondary-bg px-4 py-4 text-[12px] font-bold text-btn-secondary-text lg:hover:bg-btn-secondary-hover transition-colors cursor-pointer">+ Add New Item</button>
               </div>
               {Object.keys(errors).length > 0 && <p className="mt-8 text-[10px] font-semibold text-[#EC5757] transition-colors">- All fields must be added</p>}
             </section>
@@ -369,16 +359,16 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
             <>
               <div className="flex-1"></div>
               <div className="flex gap-2">
-                <button type="button" onClick={handleClose} className="rounded-full bg-discard-button dark:bg-[#252945] dark:text-text-secondary px-6 py-4 text-[12px] font-bold text-text-accent hover:bg-input-border dark:hover:bg-white transition-colors cursor-pointer">Cancel</button>
-                <button form="invoice-form" type="submit" className="rounded-full bg-button px-6 py-4 text-[12px] font-bold text-white hover:bg-button-hover transition-colors cursor-pointer">Save Changes</button>
+                <button type="button" onClick={handleClose} className="rounded-full bg-btn-secondary-bg px-6 py-4 text-[12px] font-bold text-btn-secondary-text lg:hover:bg-btn-secondary-hover transition-colors cursor-pointer">Cancel</button>
+                <button form="invoice-form" type="submit" className="rounded-full bg-button px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-button-hover transition-colors cursor-pointer">Save Changes</button>
               </div>
             </>
           ) : (
             <>
-              <button type="button" onClick={handleClose} className="rounded-full bg-discard-button dark:bg-[#252945] dark:text-text-secondary px-4 py-4 text-[12px] font-bold text-text-accent hover:bg-input-border dark:hover:bg-white transition-colors cursor-pointer">Discard</button>
+              <button type="button" onClick={handleClose} className="rounded-full bg-btn-secondary-bg px-4 py-4 text-[12px] font-bold text-btn-secondary-text lg:hover:bg-btn-secondary-hover transition-colors cursor-pointer">Discard</button>
               <div className="flex gap-2">
-                <button type="button" onClick={handleSaveDraft} className="rounded-full bg-draft-button px-4 py-4 text-[12px] font-bold text-text-secondary hover:bg-text-main dark:hover:bg-dark-bg transition-colors cursor-pointer">Save as Draft</button>
-                <button form="invoice-form" type="submit" className="rounded-full bg-button px-4 py-4 text-[12px] font-bold text-white hover:bg-button-hover transition-colors cursor-pointer">Save & Send</button>
+                <button type="button" onClick={handleSaveDraft} className="rounded-full bg-btn-dark-bg px-4 py-4 text-[12px] font-bold text-btn-dark-text lg:hover:bg-btn-dark-hover transition-colors cursor-pointer">Save as Draft</button>
+                <button form="invoice-form" type="submit" className="rounded-full bg-button px-4 py-4 text-[12px] font-bold text-white lg:hover:bg-button-hover transition-colors cursor-pointer">Save & Send</button>
               </div>
             </>
           )}
