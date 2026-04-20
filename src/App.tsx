@@ -4,6 +4,7 @@ import Invoices from './components/Invoices'
 import InvoiceForm from './components/InvoiceForm'
 import InvoiceView from './components/InvoiceView'
 import type { Invoice } from './types'
+import initialData from './data.json'
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -14,7 +15,17 @@ const App = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [invoices, setInvoices] = useState<Invoice[]>(() => {
     const saved = localStorage.getItem('invoices')
-    return saved ? JSON.parse(saved) : []
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as Invoice[]
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed
+        }
+      } catch (error) {
+        console.error('Failed to parse invoices from localStorage', error)
+      }
+    }
+    return initialData as Invoice[]
   })
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
 
@@ -82,6 +93,7 @@ const App = () => {
         )}
       </div>
       <InvoiceForm 
+        key={selectedInvoice?.id || 'new'}
         isOpen={isFormOpen} 
         onClose={() => setIsFormOpen(false)} 
         onAddInvoice={addInvoice}
