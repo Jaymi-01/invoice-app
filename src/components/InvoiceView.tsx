@@ -36,7 +36,6 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
         />
       )}
 
-      {/* Scrollable Content */}
       <main className="flex-1 overflow-y-auto px-6 py-8 md:px-12 md:py-14 lg:px-0 lg:max-w-[730px] lg:mx-auto lg:py-16">
         <button 
           onClick={onBack}
@@ -46,7 +45,6 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
           Go back
         </button>
 
-        {/* Status Bar */}
         <div className="flex items-center justify-between bg-container rounded-lg p-6 md:px-8 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] mb-4 transition-colors">
           <div className="flex items-center justify-between w-full md:w-auto md:gap-5">
             <span className="text-text-secondary text-[12px] font-medium transition-colors">Status</span>
@@ -67,7 +65,6 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
           </div>
         </div>
 
-        {/* Details Card */}
         <div className="bg-container rounded-lg p-6 md:p-8 lg:p-12 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] md:mb-0 transition-colors">
           <div className="flex flex-col md:flex-row md:justify-between mb-8 md:mb-5">
             <div className="mb-8 md:mb-0">
@@ -113,7 +110,6 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
             </div>
           </div>
 
-          {/* Items Table */}
           <div className="bg-btn-secondary-bg rounded-t-lg p-6 md:p-8 transition-colors">
             <div className="hidden md:grid md:grid-cols-[3fr_1fr_1fr_1fr] mb-8 text-text-secondary text-[12px] transition-colors">
               <span>Item Name</span>
@@ -143,7 +139,6 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
         </div>
       </main>
 
-      {/* Mobile Actions Footer */}
       <footer className="shrink-0 bg-container p-6 flex justify-end gap-2 md:hidden shadow-[0_-10px_20px_rgba(72,84,159,0.1)] transition-colors">
         <button onClick={onEdit} className="rounded-full bg-btn-secondary-bg px-6 py-4 text-[12px] font-bold text-btn-secondary-text lg:hover:bg-btn-secondary-hover transition-colors cursor-pointer">Edit</button>
         <button onClick={() => setIsDeleteModalOpen(true)} className="rounded-full bg-[#EC5757] px-6 py-4 text-[12px] font-bold text-white lg:hover:bg-[#FF9797] transition-colors cursor-pointer">Delete</button>
