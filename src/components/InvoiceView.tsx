@@ -48,7 +48,7 @@ const InvoiceView = ({ invoice, onBack, onEdit, onDelete, onMarkAsPaid }: Invoic
         <div className="flex items-center justify-between bg-container rounded-lg p-6 md:px-8 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] mb-4 transition-colors">
           <div className="flex items-center justify-between w-full md:w-auto md:gap-5">
             <span className="text-text-secondary text-[12px] font-medium transition-colors">Status</span>
-            <div className={`flex items-center justify-center w-[104px] py-3 rounded-md capitalize font-bold text-[12px] transition-colors ${getStatusStyles(invoice.status as any)}`}>
+            <div className={`flex items-center justify-center w-[104px] py-3 rounded-md capitalize font-bold text-[12px] transition-colors ${getStatusStyles(invoice.status)}`}>
               <div className={`w-2 h-2 rounded-full mr-2 ${
                 invoice.status === 'paid' ? 'bg-paid' : 
                 invoice.status === 'pending' ? 'bg-pending' : 'bg-text-secondary'
