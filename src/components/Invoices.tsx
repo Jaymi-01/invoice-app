@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Plus, CaretDown, CaretRight } from '@phosphor-icons/react'
 import emptyImg from '../assets/email-campaign.png'
 import type { Invoice } from '../types'
@@ -32,7 +32,7 @@ const Invoices = ({ invoices, onOpenForm, onSelectInvoice }: InvoicesProps) => {
       case 'pending':
         return 'bg-[#FF8F0014] text-pending'
       case 'draft':
-        return 'bg-btn-draft-bg/10 text-btn-draft-bg dark:text-text-secondary dark:bg-text-secondary/10'
+        return 'bg-btn-draft-bg/10 text-btn-draft-bg dark:bg-[#DFE3FA14] dark:text-[#DFE3FA]'
       default:
         return 'bg-btn-draft-bg/10 text-btn-draft-bg'
     }
@@ -124,33 +124,45 @@ const Invoices = ({ invoices, onOpenForm, onSelectInvoice }: InvoicesProps) => {
               onClick={() => onSelectInvoice(invoice)}
               className="bg-container rounded-lg p-6 md:px-8 md:py-4 shadow-[0_10px_10px_-10px_rgba(72,84,159,0.1)] border border-transparent lg:hover:border-button transition-all cursor-pointer md:grid md:grid-cols-[0.5fr_1fr_1fr_1fr_1fr_auto] md:items-center md:gap-4"
             >
-              <span className="font-bold text-text-main text-[12px] mb-6 md:mb-0 transition-colors order-1">
-                <span className="text-text-accent">#</span>{invoice.id}
-              </span>
+              {/* Mobile: Grid/Flex Layout for ID, Date, Amount (Left) and Name, Status (Right) */}
+              <div className="flex justify-between items-center w-full md:contents">
+                <div className="flex flex-col md:contents">
+                  <span className="font-bold text-text-main text-[12px] mb-2 md:mb-0 transition-colors">
+                    <span className="text-text-accent">#</span>{invoice.id}
+                  </span>
+                  <span className="text-text-secondary text-[12px] font-medium transition-colors md:hidden mb-2">
+                    Due {invoice.paymentDue}
+                  </span>
+                  <span className="text-text-main text-base font-bold transition-colors md:hidden">
+                    £ {invoice.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
 
-              <span className="text-text-secondary text-[12px] font-medium transition-colors order-2">
+                <div className="flex flex-col items-end md:contents">
+                  <span className="text-text-secondary dark:text-text-main text-[12px] font-medium transition-colors mb-6 md:mb-0">
+                    {invoice.clientName}
+                  </span>
+                  
+                  <div className={`flex items-center justify-center w-[104px] py-3 rounded-md capitalize font-bold text-[12px] transition-colors ${getStatusStyles(invoice.status as any)}`}>
+                    <div className={`w-2 h-2 rounded-full mr-2 ${
+                      invoice.status === 'paid' ? 'bg-paid' : 
+                      invoice.status === 'pending' ? 'bg-pending' : 'bg-text-secondary'
+                    }`}></div>
+                    {invoice.status}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tablet/Desktop only elements that were hidden in the flex above */}
+              <span className="hidden md:block text-text-secondary text-[12px] font-medium transition-colors">
                 Due {invoice.paymentDue}
               </span>
-
-              <span className="text-text-secondary dark:text-text-main text-[12px] font-medium transition-colors order-3 md:text-left text-right">
-                {invoice.clientName}
-              </span>
               
-              <span className="text-text-main text-base font-bold transition-colors order-4 md:text-right">
+              <span className="hidden md:block text-text-main text-base font-bold transition-colors md:text-right">
                 £ {invoice.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
               
-              <div className="flex items-center md:justify-end gap-5 order-5 mt-6 md:mt-0">
-                <div className={`flex items-center justify-center w-[104px] py-3 rounded-md capitalize font-bold text-[12px] transition-colors ${getStatusStyles(invoice.status as any)}`}>
-                  <div className={`w-2 h-2 rounded-full mr-2 ${
-                    invoice.status === 'paid' ? 'bg-paid' : 
-                    invoice.status === 'pending' ? 'bg-pending' : 'bg-text-secondary'
-                  }`}></div>
-                  {invoice.status}
-                </div>
-              </div>
-              
-              <div className="hidden md:flex justify-end order-6">
+              <div className="hidden md:flex justify-end">
                 <CaretRight weight="bold" size={12} className="text-button" />
               </div>
             </div>
