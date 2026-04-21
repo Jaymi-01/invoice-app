@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Plus, CaretDown, CaretRight } from '@phosphor-icons/react'
 import emptyImg from '../assets/email-campaign.png'
 import type { Invoice } from '../types'
@@ -143,7 +143,7 @@ const Invoices = ({ invoices, onOpenForm, onSelectInvoice }: InvoicesProps) => {
                     {invoice.clientName}
                   </span>
                   
-                  <div className={`flex items-center justify-center w-[104px] py-3 rounded-md capitalize font-bold text-[12px] transition-colors ${getStatusStyles(invoice.status as any)}`}>
+                  <div className={`flex items-center justify-center w-[104px] py-3 rounded-md capitalize font-bold text-[12px] transition-colors ${getStatusStyles(invoice.status)}`}>
                     <div className={`w-2 h-2 rounded-full mr-2 ${
                       invoice.status === 'paid' ? 'bg-paid' : 
                       invoice.status === 'pending' ? 'bg-pending' : 'bg-text-secondary'
