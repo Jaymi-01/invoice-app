@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Trash, CaretLeft, CaretDown, CaretRight } from '@phosphor-icons/react'
 import type { Invoice, Item } from '../types'
 
@@ -78,6 +78,14 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
     setIsCalendarOpen(false)
     onClose()
   }
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) handleClose()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen])
 
   const formatDate = (date: Date) => `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`
 
@@ -238,7 +246,7 @@ const InvoiceForm = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceTo
   return (
     <div className="fixed top-[72px] bottom-0 left-0 right-0 z-40 lg:top-0 lg:left-[103px]">
       <div className="absolute inset-0 bg-black/50" onClick={handleClose}></div>
-      <div className="relative flex h-full w-full max-w-[616px] lg:max-w-[719px] flex-col bg-background md:rounded-r-[20px] transition-colors duration-300">
+      <div className="relative flex h-full w-full max-w-[616px] lg:max-w-[719px] flex-col bg-background dark:bg-dark-bg md:rounded-r-[20px] transition-colors duration-300">
         <div className="flex-1 overflow-y-auto px-6 py-8 md:px-14 md:py-16 lg:p-14">
           <button onClick={handleClose} className="mb-6 flex items-center text-[12px] font-bold tracking-tight text-text-main md:hidden transition-colors cursor-pointer">
             <CaretLeft weight="bold" size={12} className="mr-2 text-button" /> Go back
